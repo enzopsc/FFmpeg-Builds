@@ -1,10 +1,6 @@
 name: Build FFmpeg
 
 on:
-  push:
-    paths-ignore:
-      - '**.md'
-      - 'LICENSE'
   workflow_dispatch:
     inputs:
       doRelease:
@@ -17,8 +13,6 @@ on:
         type: boolean
         default: false
         required: false
-  schedule:
-    - cron: '0 12 * * *'
 
 env:
   DOCKER_BUILDKIT: 1
@@ -55,8 +49,6 @@ jobs:
         include:
           - runner: ubuntu-latest
             tag_suffix: ''
-          - runner: ubuntu-26.04-arm
-            tag_suffix: -arm
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
@@ -138,23 +130,7 @@ jobs:
       fail-fast: false
       matrix:
         runner: [ubuntu-latest]
-        target: [win32,win64,winarm64,linux32,linux64,linuxarm64,linuxppc64,linuxmips64,linuxriscv64,linuxloongarch64]
-        include:
-          - runner: ubuntu-26.04-arm
-            target: linuxarm64
-            tag_suffix: -arm
-          - runner: ubuntu-26.04-arm
-            target: linuxppc64
-            tag_suffix: -arm
-          - runner: ubuntu-26.04-arm
-            target: linuxmips64
-            tag_suffix: -arm
-          - runner: ubuntu-26.04-arm
-            target: linuxriscv64
-            tag_suffix: -arm
-          - runner: ubuntu-26.04-arm
-            target: linuxloongarch64
-            tag_suffix: -arm
+        target: [win64,linux64]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -212,40 +188,8 @@ jobs:
       fail-fast: false
       matrix:
         runner: [ubuntu-latest]
-        target: [win64,winarm64,linux64,linuxarm64]
-        variant: [gpl,lgpl,gpl 8.1,gpl 9.0,lgpl 8.1,lgpl 9.0,gpl-shared,lgpl-shared,gpl-shared 8.1,gpl-shared 9.0,lgpl-shared 8.1,lgpl-shared 9.0]
-        include:
-          - runner: ubuntu-latest
-            target: win64
-            variant: gpl 8.0
-          - runner: ubuntu-latest
-            target: win64
-            variant: gpl 7.1
-          - runner: ubuntu-latest
-            target: win64
-            variant: gpl 7.0
-          - runner: ubuntu-latest
-            target: win64
-            variant: gpl 6.1
-          - runner: ubuntu-latest
-            target: win64
-            variant: gpl 6.0
-          - runner: ubuntu-latest
-            target: win64
-            variant: gpl 5.1
-          - runner: ubuntu-latest
-            target: win64
-            variant: gpl 5.0
-          - runner: ubuntu-latest
-            target: win64
-            variant: gpl 4.4
-          - runner: ubuntu-latest
-            target: win64
-            variant: gpl 4.3
-          - runner: ubuntu-26.04-arm
-            target: linuxarm64
-            variant: gpl
-            tag_suffix: -arm
+        target: [win64,linux64]
+        variant: [gpl-shared 8.1]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -310,8 +254,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [win64,winarm64,linux64,linuxarm64]
-        variant: [gpl,lgpl,gpl 8.1,gpl 9.0,lgpl 8.1,lgpl 9.0,gpl-shared,lgpl-shared,gpl-shared 8.1,gpl-shared 9.0,lgpl-shared 8.1,lgpl-shared 9.0]
+        target: [win64,linux64]
+        variant: [gpl-shared 8.1]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -326,7 +270,7 @@ jobs:
       - name: Build ffmpeg
         run: |
           T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
-          ./build.sh ${{ matrix.target }} ${{ matrix.variant }}
+          FFMPEG_REPO_OVERRIDE=https://github.com/enzopsc/FFmpeg.git GIT_BRANCH_OVERRIDE=bec/n8.1.3-rtcp-sync ./build.sh ${{ matrix.target }} ${{ matrix.variant }}
       - name: Replace spaces in string
         id: strs
         run: |
