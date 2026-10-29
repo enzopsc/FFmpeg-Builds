@@ -130,7 +130,7 @@ jobs:
       fail-fast: false
       matrix:
         runner: [ubuntu-latest]
-        target: [win64,linux64]
+        target: [win64,linux64,linuxarm64]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -188,7 +188,7 @@ jobs:
       fail-fast: false
       matrix:
         runner: [ubuntu-latest]
-        target: [win64,linux64]
+        target: [win64,linux64,linuxarm64]
         variant: [gpl-shared 8.1]
     steps:
       - name: Checkout
@@ -254,7 +254,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [win64,linux64]
+        target: [win64,linux64,linuxarm64]
         variant: [gpl-shared 8.1]
     steps:
       - name: Checkout
