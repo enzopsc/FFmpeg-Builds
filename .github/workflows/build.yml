@@ -332,6 +332,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Prune old releases
+        # tag senza release (vecchie build cancellate a mano): non deve far fallire una pubblicazione gia' riuscita
+        continue-on-error: true
         run: ./util/prunetags.sh
         env:
           GITHUB_TOKEN: ${{ github.token }}
